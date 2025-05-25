@@ -1,9 +1,9 @@
 #include "Dyhotomia_class.h"
 #include "Newton_class.h"
+#include <cmath>
+#include <iostream>
 
-double Dyhotomia_class::f(double x) {
-    return 3 * x - 4 * log(x) - 5;
-}
+using namespace std;
 
 void Dyhotomia_class::setVolumes(double a_val, double b_val) {
     a = a_val;
@@ -14,7 +14,7 @@ void Dyhotomia_class::setTolerance(double eps) {
     epsilon = eps;
 }
 
-double Dyhotomia_class::dyhotomiaMethod() {
+double Dyhotomia_class::dyhotomiaMethod(const std::function<double(double)>& f) {
     while (!(f(a) * f(b) > 0)) {
         double c = (a + b) / 2;
         if (f(a) * f(c) < 0) {
@@ -26,15 +26,7 @@ double Dyhotomia_class::dyhotomiaMethod() {
             return (a + b) / 2;
         }
     }
-}
-
-
-double Newton_class::f(double x) {
-    return 3 * x - 4 * log(x) - 5;
-}
-
-double Newton_class::df(double x) {
-    return 3 - 4 / x;
+    return (a + b) / 2; // fallback
 }
 
 void Newton_class::setInitialGuess(double x0_val) {
@@ -45,19 +37,20 @@ void Newton_class::setTolerance(double eps) {
     epsilon = eps;
 }
 
-double Newton_class::newtonMethod(int maxIter) {
+double Newton_class::newtonMethod(const std::function<double(double)>& f,
+                                  const std::function<double(double)>& df,
+                                  int maxIter) const {
     double x = x0;
     for (int i = 0; i < maxIter; ++i) {
         double fx = f(x);
         double dfx = df(x);
 
         if (fabs(dfx) < 1e-12) {
-            cerr << "Похідна занадто мала. Метод Ньютона зупинено." << endl;
+            std::cerr << "Похідна занадто мала. Метод Ньютона зупинено." << std::endl;
             break;
         }
 
         double x_new = x - fx / dfx;
-
         if (fabs(x_new - x) < epsilon)
             return x_new;
 
@@ -66,3 +59,4 @@ double Newton_class::newtonMethod(int maxIter) {
 
     return x;
 }
+

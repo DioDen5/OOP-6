@@ -1,22 +1,20 @@
 #ifndef NEWTON_CLASS_H
 #define NEWTON_CLASS_H
 
-#include <iostream>
-#include <cmath>
+#include <functional>
 
 class Newton_class {
 private:
     double x0;
     double epsilon;
 
-    double f(double x);
-    double df(double x);
-
 public:
     void setInitialGuess(double x0_val);
     void setTolerance(double eps);
 
-    double newtonMethod(int maxIter = 1000);
+    double newtonMethod(const std::function<double(double)>& f,
+                        const std::function<double(double)>& df,
+                        int maxIter = 1000) const;
 };
 
 #endif
